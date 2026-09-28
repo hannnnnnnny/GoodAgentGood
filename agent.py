@@ -98,4 +98,23 @@ if message.tool_calls:
         
         print("Tool result:", result)
         
-print(message)
+        messages.append(message)
+        
+        messages.append(
+            {
+                "role": "tool",
+                "tool_call_id": tool_call.id,
+                "content": json.dumps(result)
+            }
+        )
+        
+        final_response = client.chat.completions.create(
+            model="deepseek-flash",
+            messages=messages,
+            tools=tool
+        )
+        
+        final_message = final_response.choices[0].message
+        
+        print("\nFinal answer:")
+        print(final_message.content)
