@@ -19,6 +19,19 @@ def get_inventory(product_name: str):
     
     normalized_product_name = product_name.lower().replace(" ", "_")
 
+    aliases = {
+        "iphone case": "iphone_case",
+        "iphone cases": "iphone_case",
+        "keyboard": "keyboard",
+        "keyboards": "keyboard",
+        "mouse": "mouse",
+        "mice": "mouse",
+        "monitor": "monitor",
+        "monitors": "monitor",
+    }
+    
+    normalized_product_name = aliases.get(normalized_product_name, normalized_product_name)
+    
     stock = inventory.get(normalized_product_name)
 
     if stock is None:
@@ -56,7 +69,7 @@ tool = [
 messages = [
     {
         "role": "user",
-        "content": "How many iphone cases do you have in stock?"
+        "content": "How many mice do you have in stock?"
     }
 ]
 
@@ -69,4 +82,20 @@ response = client.chat.completions.create(
 
 message = response.choices[0].message
 
+import json
+
+if message.tool_calls:
+    tool_call = message.tool_calls[0]
+    
+    function_name = tool_call.function.name
+    arguments = json.loads(tool_call.function.arguments)
+
+    print("\nAI selected tool:", function_name)
+    print("Arguments:", arguments)
+    
+    if function_name == "get_inventory":
+        result = get_inventory(arguments["product_name"])
+        
+        print("Tool result:", result)
+        
 print(message)
