@@ -5,8 +5,8 @@ from openai import OpenAI
 
 load_dotenv()
 client = OpenAI(
-api_key=os.getenv("DEEPSEEK_API_KEY"),
-base_url=os.getenv("https://api.deepseek.com")
+    api_key=os.getenv("DEEPSEEK_API_KEY"),
+    base_url="https://api.deepseek.com"
 )
 
 def get_inventory(product_name: str):
@@ -16,8 +16,10 @@ def get_inventory(product_name: str):
         "mouse": 12,
         "monitor": 5,
     }
+    
+    normalized_product_name = product_name.lower().replace(" ", "_")
 
-    stock = inventory.get(product_name.lower())
+    stock = inventory.get(normalized_product_name)
 
     if stock is None:
         return {
